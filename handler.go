@@ -37,21 +37,10 @@ func PostBalasan(w http.ResponseWriter, r *http.Request) {
 			}
 			resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
 		} else {
-			randm := []string{
-				"Hai Hai Haiii kamuuuui " + msg.Alias_name + "\nsiiyas lagi gaadaa \n ini chat otomatis salam kenall yaaaa \n Cara penggunaan WhatsAuth ada di link berikut ini ya kak...\n" + link,
-				"IHHH jangan SPAAM berisik tau aku lagi tidur",
-				"Kamu ganteng tau",
-				"Ihhh kamu cantik banget",
-				"bro, mending beliin aku soto cak kholis",
-				"Jangan galak galak dong kak, aku takut tauu",
-				"Mawar Indah hanya akan muncul dipagi hari, MAKANYA BANGUN PAGI KAK",
-				"Cihuyyyy hari ini akuu bahagiaaa banget",
-				"Bercandyaaa berrcandyaaaa",
-			}
 			dt := &wa.TextMessage{
 				To:       msg.Phone_number,
 				IsGroup:  false,
-				Messages: GetRandomString(randm),
+				Messages: "Hai Hai Haiii kamuuuui " + msg.Alias_name + "\niyasganteng lagi gaadaa \n aku iyas salam kenall yaaaa \n Cara penggunaan WhatsAuth ada di link berikut ini ya kak...\n" + link,
 			}
 			resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
 		}
