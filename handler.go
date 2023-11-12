@@ -3,6 +3,7 @@ package webhook
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,13 +18,43 @@ func PostBalasan(w http.ResponseWriter, r *http.Request) {
 	var msg model.IteungMessage
 	var resp atmessage.Response
 	json.NewDecoder(r.Body).Decode(&msg)
+	link := "https://medium.com/@ryaasishlah123/langkah-langkah-implementasi-whatsauth-free-integrasi-2fa-otp-dan-notifikasi-melalui-whatsapp-f462fcb7ea25"
 	if r.Header.Get("Secret") == os.Getenv("SECRET") {
-		dt := &wa.TextMessage{
-			To:       msg.Phone_number,
-			IsGroup:  false,
-			Messages: "ada apakah gerangan bos " + msg.Alias_name + "iyasnya gaada \n ada apakah? \n",
+		if msg.Message == "loc" || msg.Message == "Loc" || msg.Message == "lokasi" || msg.LiveLoc {
+			location, err := ReverseGeocode(msg.Latitude, msg.Longitude)
+			if err != nil {
+				// Handle the error (e.g., log it) and set a default location name
+				location = "Unknown Location"
+			}
+
+			reply := fmt.Sprintf("Hai hai haiii kamu pasti lagi di %s \n Koordinatenya : %s - %s\n Cara Penggunaan WhatsAuth Ada di link dibawah ini"+
+				"yaa kak %s\n", location,
+				strconv.Itoa(int(msg.Longitude)), strconv.Itoa(int(msg.Latitude)), link)
+			dt := &wa.TextMessage{
+				To:       msg.Phone_number,
+				IsGroup:  false,
+				Messages: reply,
+			}
+			resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
+		} else {
+			randm := []string{
+				"Hai Hai Haiii kamuuuui " + msg.Alias_name + "\nsiiyas lagi gaadaa \n ini chat otomatis salam kenall yaaaa \n Cara penggunaan WhatsAuth ada di link berikut ini ya kak...\n" + link,
+				"IHHH jangan SPAAM berisik tau giseu lagi tidur",
+				"Kamu ganteng tau",
+				"Ihhh kamu cantik banget",
+				"bro, mending beliin aku nasgor",
+				"Jangan galak galak dong kak, aku takut tauu",
+				"Mawar Indah hanya akan muncul dipagi hari, MAKANYA BANGUN PAGI KAK",
+				"Cihuyyyy hari ini giseuu bahagiaaa banget",
+				"Bercandyaaa berrcandyaaaa",
+			}
+			dt := &wa.TextMessage{
+				To:       msg.Phone_number,
+				IsGroup:  false,
+				Messages: GetRandomString(randm),
+			}
+			resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
 		}
-		resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
 	} else {
 		resp.Response = "Secret Salah"
 	}
@@ -69,7 +100,7 @@ func Liveloc(w http.ResponseWriter, r *http.Request) {
 		location = "Unknown Location"
 	}
 
-	reply := fmt.Sprintf("dirimu lagi ada di %s \n Koordinatenya : %s - %s\n", location,
+	reply := fmt.Sprintf("Hai hai haiii kamu pasti lagi di %s \n Koordinatenya : %s - %s\n", location,
 		strconv.Itoa(int(msg.Longitude)), strconv.Itoa(int(msg.Latitude)))
 
 	if r.Header.Get("Secret") == os.Getenv("SECRET") {
@@ -78,9 +109,14 @@ func Liveloc(w http.ResponseWriter, r *http.Request) {
 			IsGroup:  false,
 			Messages: reply,
 		}
-		resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://api.wa.my.id/api/send/message/text")
+		resp, _ = atapi.PostStructWithToken[atmessage.Response]("Token", os.Getenv("TOKEN"), dt, "https://cloud.wa.my.id/api/send/message/text")
 	} else {
 		resp.Response = "Secret Salah"
 	}
 	fmt.Fprintf(w, resp.Response)
+}
+
+func GetRandomString(strings []string) string {
+	randomIndex := rand.Intn(len(strings))
+	return strings[randomIndex]
 }
