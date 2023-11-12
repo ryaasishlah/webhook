@@ -1,7 +1,7 @@
 <?php
 // Define your secret token here
-define('SECRET_TOKEN', 'secretbanget');
-define('TOKEN', 'v4.publik.gow');
+define('SECRET_TOKEN', 'secretwebhookkakak');
+define('TOKEN', 'v4.publik.yiug');
 //define('URLSENDMESSAGE', 'https://api.wa.my.id/api/send/message/text');
 // jika domain yang atas di blokir gunakan domain yang bawah
 define('URLSENDMESSAGE', 'https://cloud.wa.my.id/api/send/message/text');
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the token from the request headers
     $headers = apache_request_headers();
     $requestToken = isset($headers['secret']) ? $headers['secret'] : '';
-    if ($requestToken == '') {
+    if ($requestToken==''){
         $requestToken = isset($headers['Secret']) ? $headers['Secret'] : '';
     }
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // JSON encode the data.
             $jsonData = json_encode($msg);
             // The URL to send the POST request to.
-            $url = URLSENDMESSAGE;
+            $url=URLSENDMESSAGE
             //$url = 'https://api.wa.my.id/api/send/message/text';
             // jika domain yang atas di blokir gunakan domain yang bawah
             //$url = 'https://cloud.wa.my.id/api/send/message/text';
@@ -50,15 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'Content-Type: application/json',
                 'token: ' . TOKEN // Add your token header here
             ));
-
+            
             // Execute the POST request.
             $response = curl_exec($ch);
-
+            
             // Check for cURL errors
             if (curl_errno($ch)) {
                 $error_msg = curl_error($ch);
             }
-
+            
             // Close cURL session.
             curl_close($ch);
             // If there was an error, handle it here.
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Log or echo the error message.
                 echo "cURL Error: " . $error_msg;
             }
-
+            
             // Do something with the response.
             echo $response;
             //echo json_encode($msg);
@@ -85,3 +85,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
 }
+?>
